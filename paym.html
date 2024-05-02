@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tickets - Kanha Funcity</title>
+    <link rel="stylesheet" href="paym.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="container">
+        <h1>Book Tickets - Kanha Funcity</h1>
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="tickets">Number of Tickets:</label>
+                <input type="number" id="tickets" name="tickets" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile Number:</label>
+                <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Select Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <button id="payButton" type="button">Proceed to Payment</button> <!-- Changed type to button -->
+        </form>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script> <!-- Include Razorpay script -->
+    <script>
+        document.getElementById('payButton').onclick = function() {
+            var numberOfTickets = parseInt(document.getElementById('tickets').value);
+            var baseAmount = 699; // Base amount per ticket
+            var totalAmount = numberOfTickets * baseAmount;
+
+            var options = {
+                key: 'rzp_test_0yx0AGbEbJaWtH', // Enter your Razorpay API Key here
+                amount: totalAmount * 100, // Amount is in currency subunits. 100 refers to 100 paise = ₹1
+                currency: 'INR',
+                name: 'Kanha FunCity',
+                description: 'Payment for ' + numberOfTickets + ' Ticket(s)',
+                image: 'https://example.com/logo.png', // Your company logo
+                handler: function(response) {
+                    alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+                    // You can handle the payment success response here
+
+                    // Once payment is successful, send email
+                    sendMail();
+                },
+                prefill: {
+                    name: document.getElementById('name').value, // Pre-fill user's name
+                    email: document.getElementById('email').value, // Pre-fill user's email
+                    contact: document.getElementById('mobile').value // Pre-fill user's phone number
+                },
+                notes: {
+                    address: 'Razorpay Corporate Office' // Add any additional notes if required
+                },
+                payment_method: {
+                    external: ['upi'] // Enable UPI payment option
+                }
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        function sendMail() {
+            let parms = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                subject: "Booking Confirmation",
+                message: "Thank you for booking with Kanha FunCity. Your booking has been confirmed."
+            }
+
+            // Sending email using EmailJS
+            emailjs.send("service_wr1gqbs", "template_elrgqbw", parms)
+                .then(function(response) {
+                    alert('Email sent successfully!');
+                }, function(error) {
+                    console.error('Error sending email:', error);
+                    alert('Failed to send email.');
+                });
+        }
+    </script>
+</body>
+</html>
