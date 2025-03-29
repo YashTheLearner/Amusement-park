@@ -8,7 +8,7 @@ document.getElementById('payButton').onclick = function() {
 
     // Payment options
     var options = {
-        key: 'rzp_test_0yx0AGbEbJaWtH', // Enter your Razorpay API Key here
+        key: '', // Enter your Razorpay API Key here
         amount: totalAmount * 100, // Amount is in currency subunits. 100 refers to 100 paise = ₹1
         currency: 'INR',
         name: 'Kanha FunCity',
